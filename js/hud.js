@@ -29,12 +29,11 @@ class POPSMediaHub {
     this.tabs = [];
     this.activeTabId = null;
     this.isBrowserActive = false;
-    this.defaultUrl = 'https://www.google.com/search?q=welcome+to+POPS+media+hub';
+    this.defaultUrl = 'https://www.wikipedia.com/';
     this.playlist = [];
     this.currentTrackIndex = -1;
     this.rogerMood = localStorage.getItem('rogerMood') || 'MackGPT';
     this.dripPoints = parseInt(localStorage.getItem('dripPoints')) || 0;
-    this.grokAPIKey = null; // Placeholder for xAI Grok API key
     this.init();
   }
 
@@ -100,22 +99,6 @@ class POPSMediaHub {
         this.rogerMood = 'LackGPT';
         localStorage.setItem('rogerMood', 'LackGPT');
         this.rogerSay("Chaos mode activated. Let’s get weird.", 5);
-      },
-      'ask grok': async () => {
-        if (!this.grokAPIKey) {
-          this.rogerSay("Grok API not configured yet. Stay tuned for the collab vibe!", 0, true);
-          return;
-        }
-        this.rogerSay("Calling Grok... AI vibes incoming soon!", 5);
-        // TODO: Implement xAI Grok API call (https://x.ai/api)
-      },
-      'generate playlist': async () => {
-        if (!this.grokAPIKey) {
-          this.rogerSay("Grok API not ready yet. Try loading a folder for now!", 0, true);
-          return;
-        }
-        this.rogerSay("Generating a vibe playlist with Grok... Hold tight!", 5);
-        // TODO: Call Grok API to generate playlist based on mood or X trends
       }
     };
     this.moodResponses = {
