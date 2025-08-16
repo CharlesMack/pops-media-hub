@@ -30,7 +30,7 @@ class POPSMediaHub {
     this.tabs = [];
     this.activeTabId = null;
     this.isBrowserActive = false;
-    this.defaultUrl = 'https://www.google.com/search?q=welcome+to+POPS+media+hub';
+    this.defaultUrl = 'https://www.wikipedia.com';
     this.leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [{ name: '@mackcwm', points: this.dripPoints }];
     this.playlist = [];
     this.currentTrackIndex = -1;
