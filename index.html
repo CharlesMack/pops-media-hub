@@ -1,81 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P.O.P.S. Media Hub</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>P.O.P.S. Media Hub - Professional Multi-Tab Browser</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div id="viewerContentArea">
-    <div id="viewerPlaceholder">Drop files or use Roger to load media. Say "Hey Roger, play music" to start!</div>
-    <div id="browserControls">
-      <div id="tabsContainer"></div>
-      <input type="text" id="addressBar" placeholder="Enter URL">
-      <button class="browser-btn" onclick="hubInstance.browserBack()">←</button>
-      <button class="browser-btn" onclick="hubInstance.browserForward()">→</button>
-      <button class="browser-btn" onclick="hubInstance.browserReload()">↻</button>
-      <button class="browser-btn" onclick="hubInstance.browserHome()">🏠</button>
-      <button class="browser-btn" id="newTabBtn" onclick="hubInstance.createNewTab()">+</button>
-    </div>
-    <div id="dropZone">Drop files here!</div>
-  </div>
-  <div id="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-title">Roger AI</div>
-      <div class="roger-container">
-        <input type="text" id="rogerInput" placeholder="Hey Roger, what's the vibe?">
-        <div id="rogerResponse">
-          <span id="rogerResponseText">Roger: Yo, you’re crushing it! Let’s drop that vibe! 🚀</span>
+  <div id="app">
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">P</div>
+          <div class="logo-text">P.O.P.S. Media Hub</div>
         </div>
-        <div id="rogerSuggestions"></div>
-        <div class="roger-actions">
-          <button class="roger-action roger-mic" onclick="hubInstance.startVoiceCommand()">🎙️</button>
-          <button class="roger-action" onclick="hubInstance.shareRogerResponse()">🤳 Share</button>
-          <button class="roger-action" onclick="hubInstance.toggleRogerMood()">😎</button>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span id="statusText">System Online</span>
         </div>
       </div>
+    </header>
+
+    <div class="roger-interface">
+      <div class="roger-input-container">
+        <div class="roger-avatar">R</div>
+        <input id="rogerInput" placeholder="Ask Roger... try 'load folder' or 'playlist'" />
+        <button class="roger-mic" onclick="hubInstance.startVoiceCommand()" title="Voice Command">
+          <span class="mic-icon">🎙️</span>
+        </button>
+        <button class="roger-send" onclick="hubInstance.processRogerCommand()">Send</button>
+      </div>
+      <div id="rogerResponse">
+        <span id="rogerResponseText"></span>
+        <button class="roger-share" onclick="hubInstance.shareRogerResponse()" title="Share to X">📤</button>
+      </div>
+      <div class="roger-suggestions" id="rogerSuggestions"></div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">Media Controls</div>
-      <button class="roger-action" onclick="document.getElementById('filePicker').click()">📂 Load Media</button>
-      <input type="file" id="filePicker" multiple accept="audio/*,video/*,image/*" style="display: none;">
-      <button class="roger-action" onclick="hubInstance.loadMusicFolder()">📁 Load Folder</button>
-      <button class="roger-action" onclick="hubInstance.showPlaylist()">🎵 Playlist</button>
-      <button class="roger-action" onclick="hubInstance.clearViewer()">🗑️ Clear</button>
-      <button class="roger-action" onclick="hubInstance.openBrowser()">🌐 Browse Web</button>
+
+    <div class="main-content">
+      <div class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">◀</button>
+        <div class="sidebar-section">
+          <div class="sidebar-title">Media Library</div>
+          <div class="media-grid">
+            <div class="media-panel" onclick="loadMedia('video', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', '🎬 Big Buck Bunny')">
+              <span class="media-panel-icon">🎬</span>
+              <div class="media-panel-title">Movies</div>
+              <div class="media-panel-desc">HD Collection</div>
+            </div>
+            <div class="media-panel" onclick="hubInstance.playBackgroundMusic('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3', '🎵 Sample Track')">
+              <span class="media-panel-icon">🎵</span>
+              <div class="media-panel-title">Music</div>
+              <div class="media-panel-desc">Playlist Ready</div>
+            </div>
+            <div class="media-panel" onclick="loadMedia('image', 'https://picsum.photos/1200/800?random=1', '🖼️ Random Art')">
+              <span class="media-panel-icon">🖼️</span>
+              <div class="media-panel-title">Photos</div>
+              <div class="media-panel-desc">Gallery View</div>
+            </div>
+            <div class="media-panel" onclick="hubInstance.openBrowser()">
+              <span class="media-panel-icon">🌐</span>
+              <div class="media-panel-title">Web Browser</div>
+              <div class="media-panel-desc">Multi-Tab</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">Quick Actions</div>
+          <div class="quick-actions">
+            <div class="quick-action" onclick="hubInstance.loadMusicFolder()">
+              <span>📂</span> <span>Load Folder</span>
+            </div>
+            <div class="quick-action" onclick="document.getElementById('filePicker').click()">
+              <span>➕</span> <span>Load Files</span>
+            </div>
+            <div class="quick-action" onclick="hubInstance.showPlaylist()">
+              <span>🎶</span> <span>Show Playlist</span>
+            </div>
+            <div class="quick-action" onclick="toggleFullscreen()">
+              <span>⛶</span> <span>Toggle Fullscreen</span>
+            </div>
+            <div class="quick-action" onclick="hubInstance.toggleRogerMood()">
+              <span>😎</span> <span>Toggle Roger Mood</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="viewer" id="viewer">
+        <div class="browser-controls" id="browserControls">
+          <div class="browser-nav-top">
+            <button class="nav-btn" id="backBtn" onclick="hubInstance.browserBack()" disabled title="Back">←</button>
+            <button class="nav-btn" id="forwardBtn" onclick="hubInstance.browserForward()" disabled title="Forward">→</button>
+            <button class="nav-btn" onclick="hubInstance.browserReload()" title="Reload">↻</button>
+            <button class="nav-btn" onclick="hubInstance.browserHome()" title="Home">🏠</button>
+            <input 
+              type="text" 
+              class="address-bar" 
+              id="addressBar" 
+              placeholder="Enter website URL..."
+              onkeydown="if(event.key==='Enter') hubInstance.navigateToUrl()"
+            />
+          </div>
+        </div>
+        
+        <div class="tabs-container-wrapper">
+          <div class="tabs-container" id="tabsContainer"></div>
+          <button class="new-tab-btn" id="newTabBtn" title="New Tab (Ctrl+T)">+</button>
+        </div>
+
+        <div class="viewer-content-area" id="viewerContentArea">
+          <div class="viewer-placeholder" id="viewerPlaceholder">
+            <div class="viewer-placeholder-icon">🚀</div>
+            <div class="viewer-placeholder-text">Ready for Launch</div>
+            <div class="viewer-placeholder-desc">Select media or ask Roger to get started</div>
+          </div>
+        </div>
+
+        <div class="floating-controls" id="floatingControls"></div>
+      </div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">Drip Leaderboard</div>
-      <div class="drip-counter">Your Drip: <span id="dripPoints">0</span></div>
-      <div class="leaderboard-list" id="leaderboardList">
-        <div class="leaderboard-item">No vibes yet. Drop some!</div>
+
+    <div class="audio-overlay" id="audioOverlay">
+      <div class="audio-player-header">
+        <div class="audio-player-title">
+          <span>🎵</span>
+          <span>Now Playing</span>
+        </div>
+        <button class="audio-close-btn" onclick="hubInstance.closeAudioPlayer()" title="Close Player">×</button>
+      </div>
+      <div class="audio-controls">
+        <button class="audio-btn" onclick="hubInstance.previousTrack()" title="Previous">⏮️</button>
+        <button class="audio-btn play-pause" onclick="hubInstance.toggleAudioPlayback()" id="audioPlayPauseBtn" title="Play/Pause">▶️</button>
+        <button class="audio-btn" onclick="hubInstance.nextTrack()" title="Next">⏭️</button>
+        <div class="audio-info">
+          <div class="audio-track-title" id="audioTrackTitle">No track loaded</div>
+          <div class="audio-time" id="audioTime">00:00 / 00:00</div>
+        </div>
+      </div>
+      <div class="audio-progress" onclick="hubInstance.seekAudio(event)">
+        <div class="audio-progress-bar" id="audioProgressBar"></div>
+      </div>
+    </div>
+
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-content">
+        <div>📁 Drop files to load</div>
+      </div>
+    </div>
+    
+    <div class="playlist-modal-backdrop" id="playlistModalBackdrop">
+      <div class="playlist-modal">
+        <div class="playlist-header">
+          <div class="playlist-title">Music Playlist</div>
+          <button class="playlist-close-btn" id="playlistCloseBtn">×</button>
+        </div>
+        <div class="playlist-content" id="playlistContent"></div>
       </div>
     </div>
   </div>
-  <button id="sidebarToggle" class="collapsed">☰</button>
-  <div id="networkStatus"></div>
-  <div id="audioOverlay">
-    <span id="audioTrackTitle">No track loaded</span>
-    <span id="audioTime">0:00 / 0:00</span>
-    <div id="audioProgress" onclick="hubInstance.seekAudio(event)">
-      <div id="audioProgressBar"></div>
-    </div>
-    <button class="audio-btn" onclick="hubInstance.previousTrack()">⏮</button>
-    <button class="audio-btn" id="audioPlayPauseBtn" onclick="hubInstance.toggleAudioPlayback()">▶️</button>
-    <button class="audio-btn" onclick="hubInstance.nextTrack()">⏭</button>
-    <button class="audio-btn" onclick="hubInstance.closeAudioPlayer()">✖</button>
-  </div>
-  <div id="playlistModalBackdrop">
-    <div id="playlistModal">
-      <div id="playlistHeader">
-        <span id="playlistTitle">Playlist</span>
-        <button id="playlistCloseBtn">×</button>
-      </div>
-      <div id="playlistContent"></div>
-    </div>
-  </div>
+
+  <input type="file" id="filePicker" accept="audio/*,video/*,image/*" style="display:none" multiple />
   <script src="js/hub.js"></script>
 </body>
 </html>
