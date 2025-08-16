@@ -21,7 +21,6 @@ class POPSMediaHub {
     this.audioTrackTitle = document.getElementById('audioTrackTitle');
     this.audioTime = document.getElementById('audioTime');
     this.audioProgressBar = document.getElementById('audioProgressBar');
-    this.dripPointsDisplay = document.getElementById('dripPoints');
     this.audioPlayPauseBtn = document.getElementById('audioPlayPauseBtn');
     this.playlistModalBackdrop = document.getElementById('playlistModalBackdrop');
     this.playlistContent = document.getElementById('playlistContent');
@@ -30,14 +29,11 @@ class POPSMediaHub {
     this.tabs = [];
     this.activeTabId = null;
     this.isBrowserActive = false;
-    this.defaultUrl = 'https://www.google.com/search?q=welcome+to+POPS+media+hub';
-    this.leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [{ name: '@mackcwm', points: this.dripPoints }];
+    this.defaultUrl = 'https://www.wikipedia.com/';
     this.playlist = [];
     this.currentTrackIndex = -1;
     this.rogerMood = localStorage.getItem('rogerMood') || 'MackGPT';
     this.dripPoints = parseInt(localStorage.getItem('dripPoints')) || 0;
-    this.grokAPIKey = null; // Placeholder for xAI Grok API key
-    this.mockGrokData = { playlists: [{ title: 'Neon Vibe Mix', src: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3' }], art: [{ title: 'Neon Akron Glow', src: 'https://picsum.photos/1200/800?random=1' }] }; // Mock data
     this.init();
   }
 
@@ -45,9 +41,8 @@ class POPSMediaHub {
     this.setupEventListeners();
     this.initRoger();
     this.setupDragDrop();
-    this.updateLeaderboard();
     this.setupAudioPlayer();
-    this.rogerSay("Welcome to P.O.P.S. Media Hub! Say 'generate playlist' or 'go chaotic' and share with #POPSvibe to climb the Drip leaderboard. Vibe master, let’s roll!", 5);
+    this.rogerSay("Welcome to P.O.P.S. Media Hub. All systems online, vibe master!", 0);
   }
 
   setupEventListeners() {
@@ -104,27 +99,6 @@ class POPSMediaHub {
         this.rogerMood = 'LackGPT';
         localStorage.setItem('rogerMood', 'LackGPT');
         this.rogerSay("Chaos mode activated. Let’s get weird.", 5);
-      },
-      'ask grok': async () => {
-        if (!this.grokAPIKey) {
-          this.rogerSay("Grok API not configured yet. Stay tuned for the collab vibe!", 0, true);
-          return;
-        }
-        // Simulate Grok API call for demo
-        this.rogerSay("Grok API vibes incoming! Dropped a neon art piece.", 5);
-        this.loadMedia('image', this.mockGrokData.art[0].src, this.mockGrokData.art[0].title);
-      },
-      'generate playlist': async () => {
-        if (!this.grokAPIKey) {
-          this.rogerSay("Grok API not ready yet. Try loading a folder for now!", 0, true);
-          return;
-        }
-        // Simulate Grok API playlist generation
-        this.rogerSay(`Generated ${this.rogerMood}-inspired playlist! Vibe on.`, 5);
-        this.addToPlaylist(this.mockGrokData.playlists[0]);
-        if (this.currentTrackIndex === -1) {
-          this.playTrack(this.playlist.length - 1);
-        }
       }
     };
     this.moodResponses = {
@@ -229,20 +203,7 @@ class POPSMediaHub {
   addDripPoints(points) {
     this.dripPoints += points;
     localStorage.setItem('dripPoints', this.dripPoints);
-    console.log(`Drip Points: ${this.dripPoints}`);
-    this.updateLeaderboard();
-  }
-
-  updateLeaderboard() {
-    this.dripPointsDisplay.textContent = this.dripPoints;
-    this.leaderboard[0].points = this.dripPoints; // Mock: update @mackcwm's score
-    localStorage.setItem('leaderboard', JSON.stringify(this.leaderboard));
-    const leaderboardList = document.getElementById('leaderboardList');
-    leaderboardList.innerHTML = this.leaderboard
-      .sort((a, b) => b.points - a.points)
-      .slice(0, 5)
-      .map(item => `<div class="leaderboard-item">${item.name} - ${item.points} Drip</div>`)
-      .join('');
+    console.log(`Drip Points: ${this.dripPoints}`); // For now, log to console; later, display in UI
   }
 
   loadMedia(type, src, title = 'Media') {
