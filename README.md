@@ -9,6 +9,9 @@ Welcome to the **P.O.P.S. Media Hub**, a digital playground where your prompt is
 - 🌐 **Multi-Tab Browser**: Share tabs, apply vibe filters, and co-browse in real-time.
 - 🎧 **Drip Economy**:  shares, and playlist jams.
 
+## Built with Grok
+P.O.P.S. Media Hub channels Grok’s vibe via xAI’s truth-seeking AI inspiration. Roger’s MackGPT, LackGPT, and GuideGPT modes echo Grok’s wit and utility. Future phases will integrate xAI’s Grok API for AI-generated media, real-time trend pulls, and a Drip-powered creator economy. Stay tuned! 🚀
+
 ## Quick Start
 1. Clone the repo: `git clone https://github.com/CharlesMack/pops-media-hub.git`
 2. Open `index.html` in a modern browser (Chrome/Edge for voice support).
