@@ -42,7 +42,8 @@ class POPSMediaHub {
     this.initRoger();
     this.setupDragDrop();
     this.setupAudioPlayer();
-    this.rogerSay("Welcome to P.O.P.S. Media Hub! Say 'generate playlist' or 'go chaotic' and share with #POPSvibe to climb the Drip leaderboard. Vibe master, let’s roll!", 5);  }
+    this.rogerSay("Welcome to P.O.P.S. Media Hub. All systems online, vibe master!", 0);
+  }
 
   setupEventListeners() {
     this.rogerInput.addEventListener('keydown', (e) => e.key === 'Enter' && this.processRogerCommand());
