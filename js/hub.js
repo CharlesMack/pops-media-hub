@@ -30,7 +30,7 @@ class POPSMediaHub {
     this.tabs = [];
     this.activeTabId = null;
     this.isBrowserActive = false;
-    this.defaultUrl = 'https://www.wikipedia.com';
+    this.defaultUrl = 'https://www.google.com/search?q=welcome+to+POPS+media+hub';
     this.leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [{ name: '@mackcwm', points: this.dripPoints }];
     this.playlist = [];
     this.currentTrackIndex = -1;
@@ -47,7 +47,8 @@ class POPSMediaHub {
     this.setupDragDrop();
     this.updateLeaderboard();
     this.setupAudioPlayer();
-    this.rogerSay("Welcome to P.O.P.S. Media Hub! Say 'generate playlist' or 'go chaotic' and share with #POPSvibe to climb the Drip leaderboard. Vibe master, let’s roll!", 5);  }
+    this.rogerSay("Welcome to P.O.P.S. Media Hub! Say 'generate playlist' or 'go chaotic' and share with #POPSvibe to climb the Drip leaderboard. Vibe master, let’s roll!", 5);
+  }
 
   setupEventListeners() {
     this.rogerInput.addEventListener('keydown', (e) => e.key === 'Enter' && this.processRogerCommand());
@@ -140,6 +141,13 @@ class POPSMediaHub {
         error: "Hmm, that command didn’t work. Try ‘play music’ or ‘new tab’."
       }
     };
+  }
+
+  toggleSidebar(forceState = null) {
+    const isCollapsed = firstState !== null ? forceState : this.sidebar.classList.contains('collapsed');
+    this.sidebar.classList.toggle('collapsed', !isCollapsed);
+    this.sidebarToggle.classList.toggle('collapsed', !isCollapsed);
+    this.rogerSay(isCollapsed ? "Sidebar expanded. Vibe wide open!" : "Sidebar collapsed. Streamlined flow.", 2);
   }
 
   processRogerCommand() {
