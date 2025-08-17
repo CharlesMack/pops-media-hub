@@ -5,19 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P.O.P.S. Media Hub</title>
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap">
 </head>
 <body>
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+  
   <div id="app">
-    <div class="sidebar">
-      <div class="title">Roger Commands</div>
-      <button onclick="roger.say('Hey, Mack!')">Say Hey</button>
-      <button onclick="roger.askGrok()">Ask Grok</button>
-      <button onclick="roger.generatePlaylist()">Generate Playlist</button>
-      <button onclick="roger.loadMedia('video', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', '🎬 Big Buck Bunny')">Play Video</button>
-      <button onclick="roger.loadMedia('image', 'https://picsum.photos/800/400?random=1', '🖼️ Random Art')">Show Image</button>
-      <button onclick="roger.showPlaylist()">Show Playlist</button>
-      <button onclick="document.getElementById('filePicker').click()">Load Files</button>
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="title">Roger Commands</div>
+        <button class="sidebar-close" onclick="toggleMobileMenu()">×</button>
+      </div>
+      
+      <div class="command-buttons">
+        <button onclick="roger.say('Hey, Mack!')">Say Hey</button>
+        <button onclick="roger.askGrok()">Ask Grok</button>
+        <button onclick="roger.generatePlaylist()">Generate Playlist</button>
+        <button onclick="roger.loadMedia('video', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', '🎬 Big Buck Bunny')">Play Video</button>
+        <button onclick="roger.loadMedia('image', 'https://picsum.photos/800/400?random=1', '🖼️ Random Art')">Show Image</button>
+        <button onclick="roger.showPlaylist()">Show Playlist</button>
+        <button onclick="document.getElementById('filePicker').click()">Load Files</button>
+      </div>
+      
       <div class="sidebar-section">
         <div class="title">Drip Leaderboard</div>
         <div class="drip-counter">Your Drip: <span id="dripPoints">0</span></div>
@@ -26,11 +36,17 @@
         </div>
       </div>
     </div>
-
+    
+    <div class="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+    
     <div id="main">
-      <h1>P.O.P.S. Media Hub</h1>
-      <p id="rogerOutput">Roger online. Say a command!</p>
-      <div id="mediaOutput"></div>
+      <div class="main-content">
+        <h1>P.O.P.S. Media Hub</h1>
+        <p id="rogerOutput">Roger online. Say a command!</p>
+        <div id="mediaOutput"></div>
+      </div>
+      
+      <!-- Audio Player Overlay -->
       <div id="audioOverlay">
         <div class="audio-player-header">
           <div class="audio-player-title">
@@ -39,19 +55,21 @@
           </div>
           <button class="audio-close-btn" onclick="roger.closeAudioPlayer()">×</button>
         </div>
-        <div class="audio-controls">
-          <button class="audio-btn" onclick="roger.previousTrack()">⏮️</button>
-          <button class="audio-btn play-pause" id="audioPlayPauseBtn" onclick="roger.toggleAudioPlayback()">▶️</button>
-          <button class="audio-btn" onclick="roger.nextTrack()">⏭️</button>
-          <div class="audio-info">
-            <div id="audioTrackTitle">No track loaded</div>
-            <div id="audioTime">00:00 / 00:00</div>
-          </div>
+        <div class="audio-info">
+          <div id="audioTrackTitle">No track loaded</div>
+          <div id="audioTime">00:00 / 00:00</div>
         </div>
         <div id="audioProgressBarContainer" onclick="roger.seekAudio(event)">
           <div id="audioProgressBar"></div>
         </div>
+        <div class="audio-controls">
+          <button class="audio-btn" onclick="roger.previousTrack()">⏮️</button>
+          <button class="audio-btn play-pause" id="audioPlayPauseBtn" onclick="roger.toggleAudioPlayback()">▶️</button>
+          <button class="audio-btn" onclick="roger.nextTrack()">⏭️</button>
+        </div>
       </div>
+      
+      <!-- Playlist Modal -->
       <div id="playlistModalBackdrop">
         <div id="playlistModal">
           <div class="playlist-header">
@@ -63,8 +81,34 @@
       </div>
     </div>
   </div>
-
+  
   <input type="file" id="filePicker" accept="audio/*,video/*,image/*" style="display:none" multiple />
+  
+  <script>
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      const body = document.body;
+      
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('show');
+      body.classList.toggle('menu-open');
+    }
+    
+    // Close mobile menu when clicking on a command (optional)
+    document.addEventListener('DOMContentLoaded', function() {
+      const commandButtons = document.querySelectorAll('.command-buttons button');
+      commandButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          if (window.innerWidth <= 768) {
+            toggleMobileMenu();
+          }
+        });
+      });
+    });
+  </script>
+  
   <script src="js/hub.js"></script>
 </body>
 </html>
