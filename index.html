@@ -1,11 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Basic Meta Tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P.O.P.S. Media Hub</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <!-- SEO Meta Tags -->
+  <title>P.O.P.S. Media Hub - Interactive Audio, Video & Media Platform</title>
+  <meta name="description" content="P.O.P.S. Media Hub is your ultimate interactive media platform featuring Roger AI assistant, playlist generation, audio/video streaming, and dynamic content management. Experience next-gen media control.">
+  <meta name="keywords" content="media hub, audio player, video streaming, playlist generator, AI assistant, Roger AI, interactive media, music player, media platform, entertainment hub, Cleveland media">
+  <meta name="author" content="P.O.P.S. Media Hub">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  <meta name="rating" content="General">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://popsmediahub.com/">
+  <meta property="og:title" content="P.O.P.S. Media Hub - Interactive Audio, Video & Media Platform">
+  <meta property="og:description" content="Experience the future of media management with P.O.P.S. Media Hub. Interactive AI assistant, smart playlists, seamless streaming, and dynamic content control all in one platform.">
+  <meta property="og:image" content="https://popsmediahub.com/images/pops-hub-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="P.O.P.S. Media Hub">
+  <meta property="og:locale" content="en_US">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://popsmediahub.com/">
+  <meta name="twitter:title" content="P.O.P.S. Media Hub - Interactive Media Platform">
+  <meta name="twitter:description" content="Your ultimate interactive media platform with AI assistant Roger, smart playlists, and seamless audio/video streaming. Experience next-gen media control.">
+  <meta name="twitter:image" content="https://popsmediahub.com/images/pops-hub-twitter.jpg">
+  <meta name="twitter:image:alt" content="P.O.P.S. Media Hub interface showing Roger AI assistant and media controls">
+  <meta name="twitter:creator" content="@POPSMediaHub">
+  <meta name="twitter:site" content="@POPSMediaHub">
+  
+  <!-- Geo Location Tags -->
+  <meta name="geo.region" content="US-OH">
+  <meta name="geo.placename" content="Cleveland">
+  <meta name="geo.position" content="41.4993;-81.6944">
+  <meta name="ICBM" content="41.4993, -81.6944">
+  <meta name="DC.title" content="P.O.P.S. Media Hub">
+  
+  <!-- Additional Location Tags -->
+  <meta name="locality" content="Cleveland">
+  <meta name="region" content="Ohio">
+  <meta name="country-name" content="United States">
+  <meta name="postal-code" content="44101">
+  
+  <!-- Structured Data for Local Business (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "P.O.P.S. Media Hub",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web Browser",
+    "description": "Interactive media platform featuring AI assistant Roger, playlist generation, audio/video streaming, and dynamic content management.",
+    "url": "https://popsmediahub.com",
+    "author": {
+      "@type": "Organization",
+      "name": "P.O.P.S. Media Hub",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Cleveland",
+        "addressRegion": "OH",
+        "addressCountry": "US"
+      }
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "150"
+    },
+    "featureList": [
+      "AI Assistant Integration",
+      "Smart Playlist Generation",
+      "Audio/Video Streaming",
+      "Interactive Media Controls",
+      "File Upload Support",
+      "Mobile Responsive Design",
+      "Real-time Media Management"
+    ]
+  }
+  </script>
+  
+  <!-- Favicon and App Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  
+  <!-- Theme and App Meta -->
+  <meta name="theme-color" content="#6be675">
+  <meta name="msapplication-TileColor" content="#0a0c10">
+  <meta name="msapplication-config" content="/browserconfig.xml">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="P.O.P.S. Hub">
+  
+  <!-- Preconnect and DNS Prefetch -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://commondatastorage.googleapis.com">
+  <link rel="dns-prefetch" href="https://picsum.photos">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://popsmediahub.com/">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap">
+  
+  <!-- Preload Critical Resources -->
+  <link rel="preload" href="css/styles.css" as="style">
+  <link rel="preload" href="js/hub.js" as="script">
 </head>
 <body>
   <!-- Mobile Menu Toggle -->
