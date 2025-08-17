@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  
+  <title>P.O.P.S. Media Hub v0.4.0</title>
+
   <!-- SEO Meta Tags -->
   <title>P.O.P.S. Media Hub - Interactive Audio, Video & Media Platform</title>
   <meta name="description" content="P.O.P.S. Media Hub is your ultimate interactive media platform featuring Roger AI assistant, playlist generation, audio/video streaming, and dynamic content management. Experience next-gen media control.">
@@ -115,9 +116,6 @@
   <link rel="dns-prefetch" href="https://commondatastorage.googleapis.com">
   <link rel="dns-prefetch" href="https://picsum.photos">
   
-  <!-- Canonical URL -->
-  <link rel="canonical" href="https://popsmediahub.com/">
-  
   <!-- Stylesheets -->
 <style>
 /* CSS Variables for theming */
@@ -129,6 +127,7 @@
   --card: #121621;
   --rim: #20253a;
   --hot: #ff4d6d;
+  --warning: #ffa500;
   --shadow: rgba(0, 0, 0, 0.3);
   --transition: all 0.3s ease;
 }
@@ -287,6 +286,30 @@ h1 {
   transform: translateX(2px);
 }
 
+/* Missing files notification */
+.missing-files-notification {
+  background: var(--hot);
+  color: white;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.missing-files-notification p {
+  margin: 0 0 1rem 0;
+}
+
+.missing-files-notification button {
+  margin: 0 0.25rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Sidebar overlay for mobile */
 .sidebar-overlay {
   position: fixed;
@@ -379,6 +402,14 @@ button:hover {
 
 button:active {
   transform: translateY(0);
+}
+
+button:disabled {
+  background: var(--rim);
+  color: var(--fg);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Audio Player Overlay */
@@ -587,9 +618,34 @@ button:active {
   transform: translateX(4px);
 }
 
+.playlist-track.disabled {
+  opacity: 0.6;
+  border-left-color: var(--warning);
+}
+
 .playlist-track button {
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
+}
+
+.playlist-track button.warning {
+  background: var(--warning);
+  color: #000;
+}
+
+.playlist-track button.warning:hover {
+  background: var(--hot);
+}
+
+/* Share button styles */
+.roger-share {
+  margin-top: 1rem;
+  background: #1da1f2;
+  color: white;
+}
+
+.roger-share:hover {
+  background: #0d8bd9;
 }
 
 /* Responsive Design */
@@ -733,10 +789,9 @@ button:focus,
     --rim: #666666;
   }
 }
+</style>
   
-</style>  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap">
-  
-  <!-- Preload Critical Resources -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap">
 </head>
 <body>
   <!-- Mobile Menu Toggle -->
@@ -756,6 +811,7 @@ button:focus,
         <button onclick="roger.loadMedia('video', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', '🎬 Big Buck Bunny')">Play Video</button>
         <button onclick="roger.loadMedia('image', 'https://picsum.photos/800/400?random=1', '🖼️ Random Art')">Show Image</button>
         <button onclick="roger.showPlaylist()">Show Playlist</button>
+        <button onclick="roger.clearPlaylist()">Clear Playlist</button>
         <button onclick="document.getElementById('filePicker').click()">Load Files</button>
       </div>
       
@@ -772,7 +828,7 @@ button:focus,
     
     <div id="main">
       <div class="main-content">
-        <h1>P.O.P.S. Media Hub</h1>
+        <h1>P.O.P.S. Media Hub v0.4.0</h1>
         <p id="rogerOutput">Roger online. Say a command!</p>
         <div id="mediaOutput"></div>
       </div>
@@ -840,7 +896,8 @@ button:focus,
     });
   </script>
   
-  <script>class RogerMediaHub {
+  <script>
+class RogerMediaHub {
   constructor() {
     this.rogerOutput = document.getElementById('rogerOutput');
     this.dripPointsDisplay = document.getElementById('dripPoints');
@@ -859,6 +916,8 @@ button:focus,
     this.currentTrackIndex = -1;
     this.dripPoints = parseInt(localStorage.getItem('dripPoints') || '0');
     this.leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [{ name: '@mackcwm', points: this.dripPoints }];
+    this.loadedFiles = new Map(); // Store file objects for persistence
+    this.persistentPlaylist = JSON.parse(localStorage.getItem('persistentPlaylist')) || [];
     this.apiKey = null; // Replace with process.env.XAI_API_KEY once available
     this.mockGrokData = {
       playlists: [
@@ -870,7 +929,8 @@ button:focus,
     this.setupAudioEvents();
     this.setupFileEvents();
     this.updateLeaderboard();
-    this.say('Welcome to P.O.P.S. Media Hub v0.3.1! Drop a vibe with #POPSvibe 🚀', 5);
+    this.loadPersistedPlaylist();
+    this.say('Welcome to P.O.P.S. Media Hub v0.4.0! Drop a vibe with #POPSvibe 🚀', 5);
   }
 
   setupAudioEvents() {
@@ -934,10 +994,12 @@ button:focus,
       playlistData.tracks.forEach(track => this.addToPlaylist({
         src: track.url || track.src,
         title: track.name ? `${track.name} by ${track.artist}` : track.title,
-        cover: track.cover || coverArt
+        cover: track.cover || coverArt,
+        isLocal: false
       }));
-      if (this.currentTrackIndex === -1) {
-        this.playTrack(0);
+      if (this.currentTrackIndex === -1 && this.playlist.some(t => !t.needsReload)) {
+        const firstPlayableIndex = this.playlist.findIndex(t => !t.needsReload);
+        if (firstPlayableIndex >= 0) this.playTrack(firstPlayableIndex);
       }
       this.say(`Dropped a ${userInput} playlist! Share with #POPSvibe!`, 8);
       this.addDripPoints(10);
@@ -1028,12 +1090,21 @@ button:focus,
   }
 
   showPlaylist() {
-    this.playlistContent.innerHTML = this.playlist.map((track, index) => `
-      <div class="playlist-track">
-        <img src="${track.cover || 'https://picsum.photos/50/50'}" alt="Cover" style="width: 50px; height: 50px; border-radius: 4px;">
-        <span>${track.title}</span>
-        <button onclick="roger.playTrack(${index})">▶️</button>
-      </div>`).join('');
+    this.playlistContent.innerHTML = this.playlist.map((track, index) => {
+      const isDisabled = track.needsReload;
+      const buttonText = isDisabled ? '⚠️' : '▶️';
+      const buttonAction = isDisabled ? 'roger.promptFileReload()' : `roger.playTrack(${index})`;
+      const titleText = isDisabled ? `${track.title} (needs re-loading)` : track.title;
+      const buttonClass = isDisabled ? 'warning' : '';
+      
+      return `
+        <div class="playlist-track ${isDisabled ? 'disabled' : ''}">
+          <img src="${track.cover || 'https://picsum.photos/50/50'}" alt="Cover" style="width: 50px; height: 50px; border-radius: 4px;">
+          <span>${titleText}</span>
+          <button class="${buttonClass}" onclick="${buttonAction}" ${isDisabled ? 'title="File needs to be re-loaded"' : ''}>${buttonText}</button>
+        </div>
+      `;
+    }).join('');
     this.playlistModalBackdrop.style.display = 'flex';
     this.say('Playlist open. Pick your vibe!', 3);
   }
@@ -1043,9 +1114,23 @@ button:focus,
     this.say('Playlist closed. Keep the vibes flowing.', 2);
   }
 
+  promptFileReload() {
+    this.say('Please re-load your local files using the "Load Files" button.', 0);
+    this.hidePlaylist();
+    document.getElementById('filePicker').click();
+  }
+
   playTrack(index) {
     if (index < 0 || index >= this.playlist.length) return;
+    
     const track = this.playlist[index];
+    
+    if (track.needsReload) {
+      this.say('This track needs to be re-loaded. Use "Load Files" button.', 0);
+      this.promptFileReload();
+      return;
+    }
+    
     this.audioPlayer.src = track.src;
     this.audioTrackTitle.textContent = track.title;
     this.audioOverlay.style.display = 'block';
@@ -1067,14 +1152,27 @@ button:focus,
   }
 
   previousTrack() {
-    if (this.currentTrackIndex > 0) {
-      this.playTrack(this.currentTrackIndex - 1);
+    let prevIndex = this.currentTrackIndex - 1;
+    while (prevIndex >= 0 && this.playlist[prevIndex].needsReload) {
+      prevIndex--;
+    }
+    if (prevIndex >= 0) {
+      this.playTrack(prevIndex);
+    } else {
+      this.say('No previous track available.', 1);
     }
   }
 
   nextTrack() {
-    if (this.currentTrackIndex < this.playlist.length - 1) {
-      this.playTrack(this.currentTrackIndex + 1);
+    let nextIndex = this.currentTrackIndex + 1;
+    while (nextIndex < this.playlist.length && this.playlist[nextIndex].needsReload) {
+      nextIndex++;
+    }
+    if (nextIndex < this.playlist.length) {
+      this.playTrack(nextIndex);
+    } else {
+      this.say('End of playlist reached.', 1);
+      this.closeAudioPlayer();
     }
   }
 
@@ -1084,7 +1182,7 @@ button:focus,
     this.audioTrackTitle.textContent = 'No track loaded';
     this.audioTime.textContent = '00:00 / 00:00';
     this.audioProgressBar.style.width = '0%';
-    this.currentTrackIndex = -1;
+    this.audioPlayPauseBtn.textContent = '▶️';
     this.say('Audio player closed. Silence is a vibe.', 2);
   }
 
@@ -1105,10 +1203,39 @@ button:focus,
   handleFileLoad(files) {
     if (!files || files.length === 0) return;
     let audioFilesFound = 0;
+    const newTracks = [];
+    
     for (const file of files) {
       const url = URL.createObjectURL(file);
+      const fileId = `${file.name}_${file.size}_${file.lastModified}`;
+      
+      // Store file reference for potential re-loading
+      this.loadedFiles.set(fileId, {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
+      
+      const trackData = {
+        id: fileId,
+        src: url,
+        title: `📁 ${file.name}`,
+        cover: 'https://picsum.photos/50/50',
+        isLocal: true,
+        fileName: file.name,
+        fileType: file.type
+      };
+      
       if (file.type.startsWith('audio/')) {
-        this.addToPlaylist({ src: url, title: `📁 ${file.name}`, cover: 'https://picsum.photos/50/50' });
+        // Check if this file already exists in playlist (by ID) and update it
+        const existingIndex = this.playlist.findIndex(t => t.id === fileId);
+        if (existingIndex >= 0) {
+          this.playlist[existingIndex] = trackData; // Update existing track
+        } else {
+          this.addToPlaylist(trackData); // Add new track
+        }
+        newTracks.push(trackData);
         audioFilesFound++;
       } else if (file.type.startsWith('video/')) {
         this.loadMedia('video', url, `📁 ${file.name}`);
@@ -1116,17 +1243,114 @@ button:focus,
         this.loadMedia('image', url, `📁 ${file.name}`);
       }
     }
+    
+    // Save to persistent storage (metadata only)
+    this.savePersistentPlaylist();
+    
+    // Remove any missing files notifications
+    const notifications = document.querySelectorAll('.missing-files-notification');
+    notifications.forEach(n => n.remove());
+    
     if (audioFilesFound > 0 && this.currentTrackIndex === -1) {
-      this.playTrack(0);
+      const firstPlayableIndex = this.playlist.findIndex(t => !t.needsReload);
+      if (firstPlayableIndex >= 0) this.playTrack(firstPlayableIndex);
     }
-    this.say(`${files.length} file(s) processed. ${audioFilesFound} audio track(s) added.`, audioFilesFound * 2);
+    
+    this.say(`${files.length} file(s) processed. ${audioFilesFound} audio track(s) added and saved.`, audioFilesFound * 2);
   }
 
   addToPlaylist(track) {
-    if (!this.playlist.some(t => t.src === track.src)) {
+    if (!this.playlist.some(t => t.src === track.src || t.id === track.id)) {
       this.playlist.push(track);
-      this.showPlaylist();
+      this.savePersistentPlaylist();
     }
+  }
+
+  savePersistentPlaylist() {
+    // Save only metadata, not blob URLs which become invalid
+    const persistentData = this.playlist.map(track => ({
+      id: track.id || track.src,
+      title: track.title,
+      cover: track.cover,
+      isLocal: track.isLocal || false,
+      fileName: track.fileName,
+      fileType: track.fileType,
+      src: track.isLocal ? null : track.src // Don't save blob URLs
+    }));
+    
+    localStorage.setItem('persistentPlaylist', JSON.stringify(persistentData));
+  }
+
+  loadPersistedPlaylist() {
+    if (this.persistentPlaylist.length === 0) return;
+    
+    let localFilesCount = 0;
+    let loadedCount = 0;
+    
+    this.persistentPlaylist.forEach(trackData => {
+      if (trackData.isLocal) {
+        localFilesCount++;
+        // Add placeholder for local files that need re-loading
+        this.playlist.push({
+          ...trackData,
+          src: null,
+          needsReload: true
+        });
+      } else {
+        // Non-local files can be loaded directly
+        this.playlist.push(trackData);
+        loadedCount++;
+      }
+    });
+    
+    if (localFilesCount > 0) {
+      this.say(`Found ${localFilesCount + loadedCount} saved tracks. ${localFilesCount} local files need re-loading.`, 3);
+      this.showMissingFilesNotification(localFilesCount);
+    } else if (loadedCount > 0) {
+      this.say(`Loaded ${loadedCount} saved tracks from previous session.`, 5);
+    }
+  }
+
+  showMissingFilesNotification(count) {
+    // Add a notification button to re-load missing files
+    const notification = document.createElement('div');
+    notification.className = 'missing-files-notification';
+    notification.innerHTML = `
+      <p>⚠️ ${count} local audio files from your previous session need to be re-loaded.</p>
+      <button onclick="document.getElementById('filePicker').click(); this.parentElement.remove();" 
+              style="background: white; color: var(--hot); border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+        Re-load Files
+      </button>
+      <button onclick="roger.clearLocalTracks(); this.parentElement.remove();" 
+              style="background: transparent; color: white; border: 1px solid white; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">
+        Clear Missing Files
+      </button>
+    `;
+    
+    this.mediaOutput.insertBefore(notification, this.mediaOutput.firstChild);
+  }
+
+  clearLocalTracks() {
+    this.playlist = this.playlist.filter(track => !track.needsReload);
+    this.savePersistentPlaylist();
+    this.currentTrackIndex = -1;
+    this.closeAudioPlayer();
+    this.say('Cleared missing local files from playlist.', 2);
+  }
+
+  clearPlaylist() {
+    this.playlist = [];
+    this.persistentPlaylist = [];
+    this.loadedFiles.clear();
+    localStorage.removeItem('persistentPlaylist');
+    this.currentTrackIndex = -1;
+    this.closeAudioPlayer();
+    
+    // Remove any notifications
+    const notifications = document.querySelectorAll('.missing-files-notification');
+    notifications.forEach(n => n.remove());
+    
+    this.say('Playlist cleared. Fresh vibes incoming!', 3);
   }
 }
 
